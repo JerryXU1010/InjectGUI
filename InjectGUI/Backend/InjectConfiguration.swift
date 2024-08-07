@@ -9,11 +9,17 @@ import Combine
 import Foundation
 import SwiftUI
 
+enum injectConfigurationMode {
+    case local
+    case remote
+}
+
 // MARK: - InjectConfiguration
 
 class InjectConfiguration: ObservableObject {
     static let shared = InjectConfiguration()
-
+    
+    @Published var mode = injectConfigurationMode.local
     @Published var remoteConf = nil as InjectConfigurationModel?
 
     let injectTools: [String] = [
@@ -25,13 +31,37 @@ class InjectConfiguration: ObservableObject {
     ]
 
     private init() {
-        // 开发环境默认关掉每次启动下载捏，因为防止疯狂重新编译而导致一直在获取资源
-        // 可以在 SettingView 里面主动下载资源，不需要动这里
-        #if !DEBUG && !TEST
-        update()
-        #else
-        updateRemoteConf() // 配置还是需要 Fetch 的
-        #endif
+        firstLoadToAppendLocalConfig()
+        firstLoadCheckAndDownload()
+        updateRemoteConf()
+    }
+    
+    func firstLoadToAppendLocalConfig() {
+        guard let url = Bundle.main.url(forResource: "config", withExtension: "json") else {
+            print("[E] Local JSON file not found")
+            mode = .remote
+            return
+        }
+        let data = try! Data(contentsOf: url)
+        let decoder = JSONDecoder()
+        let conf = try! decoder.decode(InjectConfigurationModel.self, from: data)
+        DispatchQueue.main.async {
+            self.remoteConf = conf
+            print("[I] Loaded local config.json")
+        }
+    }
+
+    func firstLoadCheckAndDownload() {
+        let path = getApplicationSupportDirectory().path
+        for tool in injectTools {
+            let _url = URL(fileURLWithPath: path).appendingPathComponent(tool)
+            if !FileManager.default.fileExists(atPath: _url.path) {
+                print("[*] First load, downloading \(tool)...")
+                downloadInjectTool(name: tool)
+            } else {
+                print("[*] First load, \(tool) already exists.")
+            }
+        }
     }
 
     private func downloadConfig(data: Data?) {
@@ -45,6 +75,7 @@ class InjectConfiguration: ObservableObject {
             packages?.forEach { app in
                 softwareManager.addAnMaybeExistAppToList(appBaseLocate: app.appBaseLocate!)
             }
+            self.mode = .remote
         }
     }
 
@@ -205,9 +236,11 @@ class InjectConfiguration: ObservableObject {
 
     // MARK: - R/W Metadata Version
 
+    private let VersionMetadataAttributeName = "org.91QiuChenly.InjectLib.Tool.version"
+
     private func writeVersionMetadataIntoInjectTools(name: String, url: URL, version: String) -> Int {
         print("[*] Writing version metadata into  \(name)...")
-        let attributeName = "org.91QiuChenly.InjectLib.Tool.version"
+        let attributeName = self.VersionMetadataAttributeName
         let attributeValue = version.data(using: .utf8)
         let res = setxattr(url.path, attributeName, (attributeValue! as NSData).bytes.bindMemory(to: CChar.self, capacity: attributeValue!.count), attributeValue!.count, 0, 0)
         if res != 0 {
@@ -219,7 +252,7 @@ class InjectConfiguration: ObservableObject {
     }
 
     func getInjectToolVersion(name: String) -> String? {
-        let attributeName = "org.91QiuChenly.version"
+        let attributeName = self.VersionMetadataAttributeName
         let path = getApplicationSupportDirectory().path
         let _url = URL(fileURLWithPath: path).appendingPathComponent(name)
 

@@ -13,13 +13,22 @@
   </p>
 </p>
 
-<pre align="center">
-🧪 Working in Progress
-</pre>
+
+> [!WARNING]
+> [#8](https://github.com/wibus-wee/InjectGUI/issues/8) has not been resolved yet, and the source of the problem cannot be determined.
+>
+> If you encounter such a problem, **please temporarily abandon the use of InjectGUI and use the original InjectLib TUI**
 
 ## ⚠️ Warning
 
 _**New to Swift. Poor code quality.**_
+
+## 🌍 Localization
+
+The localization of InjectGUI is in progress, and some content has not been translated yet. PRs are welcome.
+
+- [x] English
+- [ ] Chinese (Simplified) (Not yet)
 
 ## 🌟 Features
 
@@ -34,6 +43,8 @@ _**New to Swift. Poor code quality.**_
 - [x] Customize Remote Git Repo, branch, and commit
 - [ ] Drag your favorite InjectLib to inject
 - [ ] Automatically download the original package and inject
+- [ ] MenuBar Helper
+- [ ] More...
 
 ## 👀 Preview
 
