@@ -35,6 +35,7 @@ struct AppDetailView: View {
         if getAppDetailFromSoftwareManager != nil {
             self.appDetail = SoftwareManager.shared.appListCache[appId]!
         } else {
+            print("[*] Can't find app detail in SoftwareManager, it's a abnormal situation, please report to developer. appId: \(appId)")
             self.appDetail = AppDetail(name: appInjectConfDetail?.packageName.allStrings.first ?? "", identifier: appInjectConfDetail?.packageName.allStrings.first ?? "", version: "", path: "", executable: "", icon: NSImage())
         }
         // self._appDetail = State(wrappedValue: SoftwareManager.shared.appListCache[appId] ?? AppDetail(name: "", identifier: "", version: "", path: "", icon: NSImage()))
@@ -54,7 +55,7 @@ struct AppDetailView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .onAppear {
             let inInjectLibList = injectConfiguration.checkPackageIsSupported(package: appId)
-            self.compatibility = Compatibility(
+            compatibility = Compatibility(
                 id: appId,
                 inInjectLibList: inInjectLibList
             )
@@ -70,8 +71,15 @@ struct AppDetailView: View {
                 .frame(width: 64, height: 64)
                 .cornerRadius(4)
             VStack(alignment: .leading, spacing: 4) {
-                Text(appDetail.name)
-                    .font(.headline)
+                HStack {
+                    Text(appDetail.name)
+                        .font(.headline)
+
+                    Label("Injected", systemImage: "checkmark.circle.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.green)
+                        .opacity(appDetail.isInjected ? 1 : 0)
+                }
                 Text(appDetail.identifier)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
@@ -87,10 +95,10 @@ struct AppDetailView: View {
                         injector.startInjectApp(package: appId)
                     } else {
                         let alert = NSAlert()
-                        alert.messageText = "Inject is running"
-                        alert.informativeText = "It's a abnormal situation, it shouldn't be running, please report to developer."
+                        alert.messageText = String(localized: "Inject is running")
+                        alert.informativeText = String(localized: "It's a abnormal situation, it shouldn't be running, please report to developer.")
                         alert.alertStyle = .warning
-                        alert.addButton(withTitle: "OK")
+                        alert.addButton(withTitle: String(localized: "OK"))
                         alert.runModal()
                     }
                 }
@@ -145,8 +153,8 @@ struct AppDetailView: View {
                 }
 
                 HStack {
-                    Image(systemName: (appInjectConfDetail?.componentApp ?? []).count > 0 ? CompatibilityIcon.compatible.rawValue : CompatibilityIcon.incompatible.rawValue)
-                        .foregroundColor((appInjectConfDetail?.componentApp ?? []).count > 0 ? .green : .red)
+                    Image(systemName: !(appInjectConfDetail?.componentApp ?? []).isEmpty ? CompatibilityIcon.compatible.rawValue : CompatibilityIcon.incompatible.rawValue)
+                        .foregroundColor(!(appInjectConfDetail?.componentApp ?? []).isEmpty ? .green : .red)
 
                     HStack {
                         Text("This app has sub app")
@@ -165,8 +173,8 @@ struct AppDetailView: View {
                 }
 
                 HStack {
-                    Image(systemName: (appInjectConfDetail?.tccutil?.allStrings ?? []).count > 0 ? CompatibilityIcon.compatible.rawValue : CompatibilityIcon.incompatible.rawValue)
-                        .foregroundColor((appInjectConfDetail?.tccutil?.allStrings ?? []).count > 0 ? .green : .red)
+                    Image(systemName: !(appInjectConfDetail?.tccutil?.allStrings ?? []).isEmpty ? CompatibilityIcon.compatible.rawValue : CompatibilityIcon.incompatible.rawValue)
+                        .foregroundColor(!(appInjectConfDetail?.tccutil?.allStrings ?? []).isEmpty ? .green : .red)
 
                     HStack {
                         Text("This app needs to use tccutil to reset")

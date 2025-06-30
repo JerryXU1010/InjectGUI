@@ -1,9 +1,17 @@
+> [!IMPORTANT]
+>
+> InjectGUI is about to complete its mission and reach the end of its development.
+> 
+> Where is the next generation? Stay tuned!
+
 <p align="center">
   <p align="center">
    <img width="150" height="150" src="/InjectGUI/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png" alt="Logo">
   </p>
 	<h1 align="center"><b>InjectGUI</b></h1>
 	<p align="center">
+		<b><small><code>STOP MAINTENANCE</code></small><b>
+		<br>
 		macOS Integrated Injection Framework (GUI version)
     <br />
     <br />
@@ -13,29 +21,24 @@
   </p>
 </p>
 
+## Stop maintenance
 
-> [!WARNING]
-> [#8](https://github.com/wibus-wee/InjectGUI/issues/8) has not been resolved yet, and the source of the problem cannot be determined.
+> I know that InjectGUI currently has a lot of injection problems on some systems and models, but it takes a lot of time to solve it. Maybe I don't have so much time, QiuChenly will launch more powerful software.
 >
-> If you encounter such a problem, **please temporarily abandon the use of InjectGUI and use the original InjectLib TUI**
+> So far, thanks QiuChenlyOpenSource.
 
 ## ⚠️ Warning
 
 _**New to Swift. Poor code quality.**_
 
-## 🌍 Localization
-
-The localization of InjectGUI is in progress, and some content has not been translated yet. PRs are welcome.
-
-- [x] English
-- [ ] Chinese (Simplified) (Not yet)
+Once you meet any problems with *InjectGUI*, You should back to the [InjectLib](https://github.com/QiuChenly/InjectLib) project to continue your operation.
 
 ## 🌟 Features
 
 - [x] Basic Functionality
   - [x] Backup Executable File
   - [x] Check Permission and kill process
-  - [x] Handle Keygen
+  - [ ] Handle Keygen *(Coming soon)*
   - [x] Handle Deep Code Sign
   - [x] Handle Tccutil
   - [x] Handle Extra Shell

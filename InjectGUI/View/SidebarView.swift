@@ -38,7 +38,7 @@ struct SidebarView: View {
             // 应用列表或状态信息
             ZStack {
                 if softwareManager.isLoading {
-                    ProgressView("Scanning apps...")
+                    ProgressView("Scanning Apps...")
                 } else if filteredApps.isEmpty {
                     Text("No apps found.")
                         .font(.headline)
@@ -55,12 +55,10 @@ struct SidebarView: View {
         }
         .onChange(of: injectConfiguration.remoteConf) { _ in
             updateFilteredApps()
+            softwareManager.refreshAppList()
         }
         .onChange(of: searchText) { _ in
             updateFilteredApps()
-        }
-        .onAppear {
-            softwareManager.refreshAppList()
         }
     }
 
@@ -75,8 +73,17 @@ struct SidebarView: View {
                         .frame(width: 32, height: 32)
                         .cornerRadius(4)
                     VStack(alignment: .leading) {
-                        Text(app.detail.name)
-                            .font(.headline)
+                        HStack {
+                            Text(app.detail.name)
+                                .font(.headline)
+
+                            Label("Injected", systemImage: "checkmark.circle.fill")
+                                .font(.caption2)
+                                .foregroundStyle(.green)
+                                .labelStyle(.iconOnly)
+                                .opacity(app.detail.isInjected ? 1 : 0)
+                        }
+
                         Text(app.detail.identifier)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
@@ -88,6 +95,9 @@ struct SidebarView: View {
                 .padding(.vertical, 4)
             }
             .contextMenu {
+                Button("Run App") {
+                    NSWorkspace.shared.openApplication(at: URL(fileURLWithPath: app.detail.path).deletingLastPathComponent(), configuration: NSWorkspace.OpenConfiguration())
+                }
                 Button("Open in Finder") {
                     NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: app.detail.path)
                 }
@@ -109,9 +119,9 @@ struct SidebarView: View {
         return apps
             .filter { app in
                 injectConfiguration.checkPackageIsSupported(package: app.detail.identifier) &&
-                (searchText.isEmpty ||
-                 app.detail.name.lowercased().contains(searchText.lowercased()) ||
-                 app.detail.identifier.lowercased().contains(searchText.lowercased()))
+                    (searchText.isEmpty ||
+                        app.detail.name.lowercased().contains(searchText.lowercased()) ||
+                        app.detail.identifier.lowercased().contains(searchText.lowercased()))
             }
             .sorted { $0.detail.name < $1.detail.name }
     }

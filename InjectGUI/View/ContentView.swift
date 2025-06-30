@@ -4,6 +4,7 @@
 //
 //  Created by wibus on 2024/7/19.
 //
+
 import SwiftUI
 
 struct ContentView: View {
@@ -18,7 +19,7 @@ struct ContentView: View {
             }
             .navigationTitle(Constants.appName)
 
-            WelcomeView()
+            AboutView()
         }
         .toolbar {
             ToolbarItem(placement: .navigation) {

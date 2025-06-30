@@ -1,13 +1,13 @@
 //
-//  WelcomeView.swift
+//  AboutView.swift
 //  InjectGUI
 //
-//  Created by wibus on 2024/7/20.
+//  Created by Licardo on 2024/8/9.
 //
 
 import SwiftUI
 
-struct WelcomeView: View {
+struct AboutView: View {
     var version: String {
         var ret = "Version: " +
             (Constants.appVersion)
@@ -20,7 +20,8 @@ struct WelcomeView: View {
     }
 
     var body: some View {
-        ZStack {
+        VStack {
+            Spacer()
             VStack(spacing: 4) {
                 Image("Avatar")
                     .antialiased(true)
@@ -43,25 +44,30 @@ struct WelcomeView: View {
                     Text("By wibus. Made with ❤️")
                         .foregroundColor(.secondary)
                 }
-                
 
                 Spacer().frame(height: 24)
             }
+            Spacer()
             VStack {
-                Spacer()
-                Text(version)
+                Text("Released under GPLv3. Based on QiuChenly/InjectLib.")
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .opacity(0.5)
-                    .onTapGesture {
-                        let alert = NSAlert()
-                        alert.messageText = "InjectGUI"
-                        alert.informativeText = "You're in \(injectConfiguration.mode == injectConfigurationMode.local ? "Local Mode" : "Remote Mode")."
-                        alert.addButton(withTitle: "OK")
-                        alert.runModal()
-                    }
+            }
+            .onTapGesture {
+                let alert = NSAlert()
+                alert.messageText = "InjectGUI"
+                alert.informativeText = String(localized: "You're in") + (injectConfiguration.mode == injectConfigurationMode.local ? String(localized: "Local Mode") : String(localized: "Remote Mode"))
+                alert.addButton(withTitle: String(localized: "OK"))
+                alert.runModal()
             }
             .padding()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .tabItem {
+            Label("About", systemImage: "info.circle")
+        }
     }
+}
+
+#Preview {
+    AboutView()
 }
